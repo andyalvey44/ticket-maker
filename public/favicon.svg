@@ -1,12 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Concert ticket">
-  <mask id="notches">
-    <rect width="32" height="32" fill="#fff"/>
-    <circle cx="12" cy="6" r="3.2" fill="#000"/>
-    <circle cx="12" cy="26" r="3.2" fill="#000"/>
-  </mask>
-  <rect x="1.5" y="6" width="29" height="20" rx="2.6" fill="#e87d33" mask="url(#notches)"/>
-  <line x1="12" y1="10" x2="12" y2="22" stroke="#fff" stroke-width="1.8"
-        stroke-linecap="round" stroke-dasharray="2.2 2.6"/>
-  <rect x="16.5" y="12.5" width="10" height="2.4" rx="1.2" fill="#fff"/>
-  <rect x="16.5" y="17.5" width="6.4" height="2.4" rx="1.2" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Comedy Castle ticket">
+  <!--
+    The club's own ticket stock: white paper with an orange band down each side.
+    The bands sit where they really do - the stock is 5 3/8" wide, orange to
+    1.0000", white to 3.9375", orange to 4.8125", then a white strip to the
+    edge. Scaled to a 28-wide body: 5.21 wide, then 22.51 to 27.07.
+    Kept plain on purpose; at 16px the bands are what identify it.
+  -->
+  <defs>
+    <clipPath id="body">
+      <rect x="2" y="7.5" width="28" height="17" rx="2.4" />
+    </clipPath>
+  </defs>
+
+  <rect x="2" y="7.5" width="28" height="17" rx="2.4" fill="#fdfcfa" />
+  <g clip-path="url(#body)">
+    <rect x="2" y="7.5" width="5.21" height="17" fill="#e87d33" />
+    <rect x="22.51" y="7.5" width="4.56" height="17" fill="#e87d33" />
+  </g>
+  <rect x="2" y="7.5" width="28" height="17" rx="2.4" fill="none"
+        stroke="#221d19" stroke-width="1.6" />
 </svg>
