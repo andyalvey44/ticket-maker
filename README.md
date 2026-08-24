@@ -1,11 +1,19 @@
 # ticket-maker
 
-Internal tool for the Comedy Castle office. Replaces the manual Adobe Express
-process for making show tickets.
+Internal tool for the Comedy Castle office. It replaces the manual Adobe
+Express process: read the club's upcoming shows, check them over, and produce
+a folder of print-ready ticket PDFs.
 
-The office workflow is: **Get Shows → Review → Create Tickets**, run about once
-a week. Users are non-technical, so the app is one page with no navigation,
-no settings, and one obvious final button.
+The office workflow is **Get Shows → Review → Create Tickets**, run about once
+a week. Users are non-technical, so the app is one page with no navigation, no
+settings, and one obvious final button.
+
+## Two pages
+
+- `/` — public front door (`index.html` + `public/home.css`). Static, no
+  JavaScript. Says what the tool is and who it belongs to, for visitors
+  arriving from elsewhere.
+- `/app` — the tool itself (`app.html` + React). Where staff work.
 
 ## Running it
 
@@ -14,113 +22,171 @@ npm install
 npm run dev
 ```
 
-## Where the project is
+`npm run dev` also serves `/api/shows`. `npm run preview` does not — it only
+serves the built front end, so the Get buttons will not work there.
 
-- [x] **1. Office UI with mock show data** — done
-- [ ] **2. Confirm the workflow reads clearly to office staff**
-- [ ] 3. Real Comedy Castle event extraction
-- [ ] 4. One generated ticket PDF
-- [ ] 5. Compare against the reference PDFs
-- [ ] 6. Batch generation
-- [ ] 7. Regenerate a single show
-- [ ] 8. Print geometry, typography, alignment
+## How it works
 
-Current code: `src/App.tsx` (page), `src/ShowRow.tsx` (one show, view + edit),
-`src/shows.ts` (types, mock schedule, formatting). Mock data is generated
-forward from today, so the list is always upcoming.
+1. **Get This Week's Shows** / **Get Next 4 Weeks** calls `/api/shows`, which
+   reads comedycastle.com on the server and returns every upcoming
+   performance. Browsers are not allowed to read another site directly, which
+   is the only reason a server piece exists at all.
+2. The shows appear in a review list. Each one can be changed or removed.
+3. **Create Tickets** builds one PDF per show and downloads them as a single
+   zip named after the folder, e.g. `Tickets - Week of Aug 26.zip`. The
+   employee extracts it and copies the folder to the ticket window computer.
+4. **Just this ticket** on any row re-makes that one show's ticket, for when a
+   single show changes after the batch was made.
+
+There is no database, no login and no scheduler. Nothing is stored between
+visits except the print alignment nudge, which lives in the browser.
+
+## Reading the club's schedule
+
+`api/parseEvents.ts` parses the events page. The site is WordPress running the
+RHP events plugin, and everything is server-rendered, so parsing is
+deterministic — no browser automation and no AI guessing at names or times.
+There is no REST or iCal feed; both were checked and are switched off.
+
+Two kinds of entry appear on the page:
+
+- **One-off shows** carry their own date, time and price.
+- **A headliner playing several nights** is one "series" entry containing a
+  full performance listing. Each night in that listing becomes its own ticket
+  record, because each one needs its own ticket.
+
+The page renders the whole list twice, once for phones and once for wider
+screens, so repeats are dropped. Days the club is closed are listed as events
+titled `CLOSED: …` and are excluded.
+
+Age restrictions come from the site when it states them and default to 18+.
+A few shows are listed with no price; those are flagged in the review list and
+block ticket creation until someone fills them in.
 
 ## Ticket specification
 
-Taken from the two reference PDFs in `public/`, which are real office output
-and are the target specification.
+Taken from the two reference PDFs and the photo of a printed ticket in
+`reference/`, which together are the target specification. They live outside
+`public/` so they are not published on the live site.
 
-### Page
+### Page size
 
-Both reference PDFs are `899.25 x 327 pt`, produced by Adobe Express. That is
-an exact **2.75:1** ratio and does *not* map to the full 5.375" ticket width.
+Both reference PDFs are `899.25 x 327 pt`, made in Adobe Express. Generated
+tickets use that page box **exactly**, so the office's existing "Concert
+Ticket" print setting places them on the stock the same way it always has.
+The inch measurements below are for understanding the design; nothing in the
+generator depends on them.
 
-The page corresponds to the ticket **minus the dead space** on the right:
+### Where the page lands on the stock
 
-```
-page width  = 4.8125"   (left edge through the end of the right orange band)
-page height = 1.7500"   (4.8125 / 2.75, exactly)
-```
-
-Four independent checks agree with this reading, and none agree with mapping
-the page to the full 5.375":
-
-| Check | Under 4.8125" | Under 5.375" |
-| --- | --- | --- |
-| Ticket height | 1.7500" exactly | 1.9545" |
-| Text centre axis | 2.467" — white-area centre is 2.4688" | 2.756" — 0.29" off |
-| "+18" x position | 4.358" — inside right orange band | 4.867" — in dead space |
-| Price x position | 4.030" — inside right orange band | 4.501" — in dead space |
-
-Confirm with one test print before treating it as final.
-
-### Ticket zones (physical stock, 5.375" wide)
+Measured from the photo of a real printed ticket, page unit `p` lands at:
 
 ```
-0.0000 - 1.0000   left orange band
-1.0000 - 3.9375   white information area   (centre 2.4688")
-3.9375 - 4.8125   right orange band
-4.8125 - 5.3750   dead space               (outside the generated page)
+inches across the stock = 0.005701 * p + 0.0396
 ```
+
+That was fixed by matching the printed headliner against the same text in the
+reference PDF, then checked against the printed price, which agreed to within
+four pixels of a 227 pixel-per-inch photo.
+
+So the printed page covers about `0.04"` to `5.17"` of the 5.375" stock.
+
+### Ticket zones
+
+The physical stock, confirmed against the photo:
+
+```
+0.0000 - 1.0000   orange band
+1.0000 - 3.9375   white information area   -> page units 168.5 - 687
+3.9375 - 4.8125   orange band
+4.8125 - 5.3750   white strip
+```
+
+Note for anyone working from the original brief: that last strip is **not**
+dead space. The printed `+18` sits across the boundary between the second
+orange band and this strip, and so does the tail of the price. Price and age
+genuinely do belong over the orange, as the brief said — there is not enough
+room in the white strip for either at ticket size.
 
 ### Element positions
 
-Measured from the reference PDFs and converted to inches on a
-4.8125" x 1.75" page. Y is from the bottom edge.
+In page units, y measured up from the bottom. Both references agree on every
+number here.
 
 | Element | Position |
 | --- | --- |
 | Background | white, full page |
-| Logo | x 1.6985 - 3.1140, y 1.3187 - 1.6306 (identical in both references) |
-| Headliner | baseline y 1.0230, centred |
-| Day and date | baseline y 0.8301, centred |
-| Show time | baseline y 0.6375, centred |
-| Age | x 4.3579, baseline y 1.5191 (identical in both references) |
-| Price | x ~4.030, baseline y ~0.209 |
+| Logo | x 317.3795, y 246.4035, 264.4845 x 58.2762 |
+| Headliner | centred on the logo axis 449.62, baseline y 191.148 |
+| Day and date | centred on the logo axis 449.62, baseline y 155.117 |
+| Show time | centred on the logo axis 449.62, baseline y 119.119 |
+| Price | centred on x 814.3, baseline y 39.05, size 26.804 |
+| Age | centred on x 814.3, baseline y 283.847, size 30.3224 |
 
-Line spacing in the centred block is 1.2 em. The three baselines are fixed
-across both references — only the x changes, because Adobe centred each line
-individually.
+Adobe put the text block on x 481.5 and the age on x 843.7. Both were moved:
+the text now shares the logo's axis, and the age shares the price's, so each
+group reads as one centred stack. The baselines and sizes are Adobe's.
 
-The logo is centred on the page at 2.406", which is 0.063" left of the white
-area's true centre. The text block is centred at ~2.467", which is correct.
-Centre everything on the white area rather than copying the logo's offset.
+The centring axes were solved from the reference coordinates using real font
+metrics: all six main-block lines across both files agree on 481.5 within
+0.7 units, and both prices agree on 814.3 exactly. Generated output matches
+the reference to under a quarter of a page unit on every element.
+
+Moving the text onto the logo axis also widens the room a centred line has,
+from 411 to 475 units, so fewer dates need shrinking.
+
+### One deliberate difference
+
+Adobe let a long date run onto the orange band — `WEDNESDAY, SEPTEMBER 30,
+2026` would overflow by about 0.6", and the printed ticket in `public/` shows
+`SUNDAY, AUGUST 23, 2026` already crossing the boundary by 0.15".
+
+The generator shrinks a line that would not fit inside the white information
+area, down to 60% at the most. Most dates end up slightly smaller than the
+headliner; none of them touch the orange.
 
 ### Typography
 
-- Font: **Ultra Regular** throughout — a free Google Font, so it can be
-  embedded directly.
-- Size: 30.02 pt on the reference page = **11.57 pt** at final ticket scale.
-- Price size was hand-tweaked per ticket in Adobe (26.8 and 27.8 pt); pick one
-  size and centre it in the band.
-- Main block: pure black. Price and age: `#02191C`.
+- Font: **Ultra Regular**, taken out of the reference PDF itself, so it is the
+  same bytes the office's tickets already use. `scripts/extract-reference-assets.cjs`
+  regenerates the logo from the same source.
+- Size: 30.02 for the main block.
+- Main block is pure black. Price and age are `#02191C`.
 
 ### Text formats
 
-Copy these exactly — they are what the references print:
-
 | Field | Ticket text |
 | --- | --- |
-| Headliner | `BIG JAY OAKERSON`, `OPEN MIC NIGHT` — all caps |
+| Headliner | `BIG JAY OAKERSON` — all caps |
 | Day and date | `SATURDAY, AUGUST 22, 2026` — all caps, year included |
 | Show time | `9:30PM` — no space, uppercase |
-| Age | `+18` — note the sign comes **first** |
-| Price | `$5`, `$35-$40` — a range is normal, so price is free text |
+| Age | `+18` — the sign comes first |
+| Price | `$5`, `$26-$31` — a range is normal, so price is free text |
 
-The app's own UI says "18+" because that is how the office says it. The
-`+18` form is a ticket-rendering detail.
+An all-ages show prints no age line, since there is nothing to restrict.
 
-### Logo asset
+### Lining up on the printer
 
-`public/comedycastlelogo.png` is 394x100 (aspect 3.94). The logo embedded in
-the reference tickets is 708x156 (aspect 4.54) — a different crop. Extract the
-embedded image from a reference PDF when building the generator.
+"Printing not lining up on the ticket?" on the main page moves everything in
+steps of about 0.03", and remembers the setting on that computer. It exists so
+the office can correct a drifting printer without a code change. All the
+geometry is in `src/ticket/geometry.ts` if a real change is needed.
 
 ## Deployment
 
-GitHub to Vercel. The office uses a bookmarked URL on 2-3 computers, so
-updates ship remotely. No auth, no database, no scheduler.
+GitHub to Vercel. Vite builds the front end; `api/shows.ts` becomes a
+serverless function. The office uses a bookmarked URL on 2-3 computers, so
+updates ship remotely.
+
+## How it is meant to behave
+
+`.claude/PRODUCT-NOTES.md` is the running record of real-world office
+behaviour — scenarios from the office, every decision made and why, and the
+questions still open. Read it before changing how anything works; where it and
+the code disagree, it wins.
+
+## Still to do
+
+- A test print, to confirm the page really does sit where the photo says.
+- Whether shrinking long dates is the right call, or the office would rather
+  keep them full size and overlapping as they are today.

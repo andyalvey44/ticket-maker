@@ -69,6 +69,17 @@ h2 {
   color: var(--muted);
 }
 
+.loading {
+  margin-top: 28px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.needs-price {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .show-list {
   list-style: none;
   margin: 20px 0 0;
@@ -124,11 +135,16 @@ button.small {
   border-radius: 8px;
 }
 
-button.small:hover {
+button.small:hover:not(:disabled) {
   border-color: var(--text);
 }
 
-button.remove:hover {
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.remove:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -139,7 +155,7 @@ button.save {
   border-color: var(--accent);
 }
 
-button.save:hover {
+button.save:hover:not(:disabled) {
   background: var(--accent-dark);
   border-color: var(--accent-dark);
 }
@@ -180,6 +196,7 @@ button.save:hover {
 
 /* Make tickets */
 
+
 button.create {
   display: block;
   width: 100%;
@@ -193,7 +210,7 @@ button.create {
   border-radius: 12px;
 }
 
-button.create:hover {
+button.create:hover:not(:disabled) {
   background: var(--accent-dark);
 }
 
@@ -204,4 +221,74 @@ button.create:hover {
   border: 2px solid var(--border);
   border-radius: 10px;
   text-align: center;
+}
+
+.notice.done {
+  border-color: #2f7d43;
+  background: #f2fbf4;
+}
+
+.notice.problem {
+  border-color: var(--accent);
+  background: #fdf3f4;
+}
+
+/* Lining the printing up on the ticket stock */
+
+.fit {
+  margin-top: 28px;
+  text-align: center;
+}
+
+button.link {
+  padding: 6px;
+  font-size: 17px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+button.link:hover {
+  color: var(--text);
+}
+
+.fit-panel {
+  margin-top: 12px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.arrows {
+  margin: 16px 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.arrows > div {
+  display: flex;
+  gap: 8px;
+}
+
+.arrows button {
+  min-width: 96px;
+  padding: 10px 16px;
+  font-size: 17px;
+  font-weight: 600;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+}
+
+.arrows button:hover {
+  border-color: var(--text);
+}
+
+.fit-state {
+  margin-bottom: 12px;
+  color: var(--muted);
 }

@@ -8,11 +8,19 @@ import {
 
 type Props = {
   show: Show
+  busy: boolean
   onChange: (show: Show) => void
   onRemove: (id: string) => void
+  onMakeOne: (show: Show) => void
 }
 
-export default function ShowRow({ show, onChange, onRemove }: Props) {
+export default function ShowRow({
+  show,
+  busy,
+  onChange,
+  onRemove,
+  onMakeOne,
+}: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(show)
 
@@ -39,19 +47,38 @@ export default function ShowRow({ show, onChange, onRemove }: Props) {
             {formatDayAndDate(show.date)} at {show.time}
           </p>
           <p className="show-extra">
-            {show.price} &middot; {show.age}
+            {show.price.trim() ? (
+              show.price
+            ) : (
+              <span className="needs-price">Needs a price</span>
+            )}{' '}
+            &middot; {show.age}
           </p>
         </div>
         <div className="show-actions">
-          <button type="button" className="small" onClick={startEditing}>
+          <button
+            type="button"
+            className="small"
+            disabled={busy}
+            onClick={startEditing}
+          >
             Change
           </button>
           <button
             type="button"
             className="small remove"
+            disabled={busy}
             onClick={() => onRemove(show.id)}
           >
             Remove
+          </button>
+          <button
+            type="button"
+            className="small one"
+            disabled={busy}
+            onClick={() => onMakeOne(show)}
+          >
+            Just this ticket
           </button>
         </div>
       </li>

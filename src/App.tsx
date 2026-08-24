@@ -1,28 +1,57 @@
 import { useState } from 'react'
 import ShowRow from './ShowRow'
-import {
-  getNextFourWeeksShows,
-  getThisWeeksShows,
-  sortShows,
-  type Show,
-} from './shows'
+import { fetchShows } from './fetchShows'
+import { nextFourWeeks, sortShows, thisWeek, type Show } from './shows'
+import { createOneTicket, createTicketsFolder } from './ticket/createTickets'
+import type { Nudge } from './ticket/geometry'
+import { NUDGE_STEP, describeNudge, loadNudge, saveNudge } from './ticket/nudge'
 import './App.css'
+
+type Range = 'week' | 'fourWeeks'
+
+const RANGES = {
+  week: { title: "This Week's Shows", pick: thisWeek },
+  fourWeeks: { title: 'Next 4 Weeks', pick: nextFourWeeks },
+}
 
 export default function App() {
   const [shows, setShows] = useState<Show[] | null>(null)
-  const [listTitle, setListTitle] = useState('')
+  const [range, setRange] = useState<Range>('week')
+  const [loading, setLoading] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
+  const [problem, setProblem] = useState('')
+  const [nudge, setNudge] = useState<Nudge>(loadNudge)
+  const [showNudge, setShowNudge] = useState(false)
 
-  function load(title: string, getShows: () => Show[]) {
+  const working = loading || busy
+  const missingPrice = (shows ?? []).filter((show) => !show.price.trim())
+
+  async function load(which: Range) {
     if (
       shows !== null &&
       !window.confirm('This replaces the list below. Get the shows again?')
     ) {
       return
     }
-    setShows(sortShows(getShows()))
-    setListTitle(title)
+    setLoading(true)
     setNotice('')
+    setProblem('')
+    try {
+      const upcoming = RANGES[which].pick(await fetchShows())
+      setShows(sortShows(upcoming))
+      setRange(which)
+      if (upcoming.length === 0) {
+        setProblem('The Comedy Castle website has no shows listed for those dates.')
+      }
+    } catch (error) {
+      console.error(error)
+      setProblem(
+        'Could not get the shows from the Comedy Castle website. Please try again in a minute.',
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   function updateShow(updated: Show) {
@@ -32,16 +61,58 @@ export default function App() {
       ),
     )
     setNotice('')
+    setProblem('')
   }
 
   function removeShow(id: string) {
     setShows((current) => (current ?? []).filter((show) => show.id !== id))
     setNotice('')
+    setProblem('')
+  }
+
+  function moveNudge(x: number, y: number) {
+    const next = { x: nudge.x + x, y: nudge.y + y }
+    setNudge(next)
+    saveNudge(next)
+  }
+
+  async function run(job: () => Promise<string>, done: (name: string) => string) {
+    setBusy(true)
+    setNotice('')
+    setProblem('')
+    try {
+      setNotice(done(await job()))
+    } catch (error) {
+      console.error(error)
+      setProblem('Something went wrong making the tickets. Please try again.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   function createTickets() {
-    setNotice(
-      `Ticket printing is not turned on yet. When it is, this button will make tickets for all ${shows?.length} shows below.`,
+    if (missingPrice.length > 0) {
+      setProblem(
+        `Add a price to ${missingPrice.length === 1 ? 'this show' : 'these shows'} first: ` +
+          missingPrice.map((show) => show.headliner).join(', '),
+      )
+      return
+    }
+    run(
+      () => createTicketsFolder(shows ?? [], range, nudge),
+      (folder) =>
+        `Your tickets are ready. Look in this computer's Downloads for ${folder}. Right-click it, choose Extract All, then copy the folder to the ticket window computer.`,
+    )
+  }
+
+  const createOne = (show: Show) => {
+    if (!show.price.trim()) {
+      setProblem(`Add a price to ${show.headliner} first.`)
+      return
+    }
+    run(
+      () => createOneTicket(show, nudge),
+      (name) => `One ticket is ready: ${name}. It is in this computer's Downloads.`,
     )
   }
 
@@ -54,21 +125,23 @@ export default function App() {
       </header>
 
       <div className="pick-buttons">
-        <button type="button" onClick={() => load("This Week's Shows", getThisWeeksShows)}>
+        <button type="button" disabled={working} onClick={() => load('week')}>
           Get This Week's Shows
         </button>
-        <button type="button" onClick={() => load('Next 4 Weeks', getNextFourWeeksShows)}>
+        <button type="button" disabled={working} onClick={() => load('fourWeeks')}>
           Get Next 4 Weeks
         </button>
       </div>
 
-      {shows !== null && (
+      {loading && <p className="count loading">Getting the shows…</p>}
+
+      {shows !== null && !loading && (
         <section className="review">
-          <h2>{listTitle}</h2>
+          <h2>{RANGES[range].title}</h2>
 
           {shows.length === 0 ? (
             <p className="empty">
-              You removed every show. Use a button above to get the shows again.
+              No shows to make tickets for. Use a button above to look again.
             </p>
           ) : (
             <>
@@ -82,20 +155,82 @@ export default function App() {
                   <ShowRow
                     key={show.id}
                     show={show}
+                    busy={busy}
                     onChange={updateShow}
                     onRemove={removeShow}
+                    onMakeOne={createOne}
                   />
                 ))}
               </ul>
 
-              <button type="button" className="create" onClick={createTickets}>
-                Create Tickets
+              <button
+                type="button"
+                className="create"
+                disabled={busy}
+                onClick={createTickets}
+              >
+                {busy ? 'Making tickets…' : 'Create Tickets'}
               </button>
             </>
           )}
-
-          {notice && <p className="notice">{notice}</p>}
         </section>
+      )}
+
+      {notice && <p className="notice done">{notice}</p>}
+      {problem && <p className="notice problem">{problem}</p>}
+
+      {shows !== null && (
+        <div className="fit">
+          <button
+            type="button"
+            className="link"
+            onClick={() => setShowNudge((open) => !open)}
+          >
+            Printing not lining up on the ticket?
+          </button>
+
+          {showNudge && (
+            <div className="fit-panel">
+              <p>
+                Move the printing a little, then make the tickets again and try
+                one on the printer.
+              </p>
+              <div className="arrows">
+                <button type="button" onClick={() => moveNudge(0, NUDGE_STEP)}>
+                  Up
+                </button>
+                <div>
+                  <button type="button" onClick={() => moveNudge(-NUDGE_STEP, 0)}>
+                    Left
+                  </button>
+                  <button type="button" onClick={() => moveNudge(NUDGE_STEP, 0)}>
+                    Right
+                  </button>
+                </div>
+                <button type="button" onClick={() => moveNudge(0, -NUDGE_STEP)}>
+                  Down
+                </button>
+              </div>
+              <p className="fit-state">
+                {nudge.x === 0 && nudge.y === 0
+                  ? 'Printing is where it has always been.'
+                  : `Printing moved ${describeNudge(nudge)}.`}
+              </p>
+              {(nudge.x !== 0 || nudge.y !== 0) && (
+                <button
+                  type="button"
+                  className="small"
+                  onClick={() => {
+                    setNudge({ x: 0, y: 0 })
+                    saveNudge({ x: 0, y: 0 })
+                  }}
+                >
+                  Put it back
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </main>
   )

@@ -1,0 +1,318 @@
+/* The public front door. The tool itself lives at /app and has its own styles. */
+
+@font-face {
+  /* The face printed on the club's real tickets. */
+  font-family: 'Ticket Display';
+  src: url('/ticket-font.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --text: #1c1a22;
+  --muted: #5d5866;
+  --bg: #f6f5f3;
+  --card: #ffffff;
+  --border: #d9d5d0;
+  --accent: #b3122b;
+  --accent-dark: #8d0e22;
+  --ticket-orange: #e87d33;
+  --ticket-ink: #16130f;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --display: 'Ticket Display', 'Bookman Old Style', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 18px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.home {
+  width: 680px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 56px 20px 72px;
+}
+
+h1,
+h2,
+p,
+ol {
+  margin: 0;
+}
+
+/* Masthead */
+
+.masthead {
+  text-align: center;
+  padding-bottom: 44px;
+}
+
+.club-logo {
+  height: 64px;
+  width: auto;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(38px, 9vw, 58px);
+  line-height: 1.02;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin: 16px auto 0;
+  max-width: 30em;
+  font-size: 20px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.enter {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 20px 44px;
+  font-size: 21px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.enter:hover,
+.enter:focus-visible {
+  background: var(--accent-dark);
+}
+
+.staff-note {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* The one thing a visitor most needs to know */
+
+.notice-band {
+  padding: 22px 26px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+}
+
+.notice-band p {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.notice-band strong {
+  color: var(--text);
+}
+
+/* Sections */
+
+section + section {
+  margin-top: 44px;
+}
+
+.notice-band + section {
+  margin-top: 52px;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+
+section p + p {
+  margin-top: 14px;
+}
+
+/* Steps — a real sequence, so they are numbered */
+
+ol.steps {
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+ol.steps li {
+  counter-increment: step;
+  padding-left: 52px;
+  position: relative;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 17px;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.step-name {
+  display: block;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Scale drawing of the real ticket.
+   Every position below is measured off the office's own reference tickets and
+   converted to a share of the 5 3/8 inch stock, so this shows what the tool
+   actually prints — including the date shrinking when it runs long, and the
+   centre block sitting on the logo's own axis. */
+
+.ticket-section .ticket {
+  position: relative;
+  container-type: inline-size;
+  margin-top: 22px;
+  display: flex;
+  width: 100%;
+  aspect-ratio: 2.75;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  color: var(--ticket-ink);
+}
+
+.band,
+.face,
+.strip {
+  flex-shrink: 0;
+}
+
+.band {
+  background: var(--ticket-orange);
+}
+
+.band-left {
+  width: 18.6%;
+}
+
+.face {
+  width: 54.65%;
+}
+
+.band-right {
+  width: 16.28%;
+}
+
+.strip {
+  width: 10.47%;
+}
+
+.ticket > span,
+.ticket > .t-logo {
+  position: absolute;
+  font-family: var(--display);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ticket > span {
+  /* Every line is centred on its own axis; `left` is set per line below so a
+     shared rule cannot outrank them on specificity. */
+  transform: translateX(-50%);
+}
+
+.t-logo {
+  left: 34.4%;
+  bottom: 74.18%;
+  width: 28.05%;
+  height: auto;
+}
+
+.t-name {
+  left: 48.43%;
+  bottom: 56.31%;
+  font-size: 3.184cqw;
+}
+
+.t-date {
+  left: 48.43%;
+  bottom: 46.18%;
+  font-size: 2.894cqw;
+}
+
+.t-time {
+  left: 48.43%;
+  bottom: 35.3%;
+  font-size: 3.184cqw;
+}
+
+/* Age and price share one axis over the right-hand orange band, which spans
+   73.3% to 89.5% of the stock. */
+
+.t-age {
+  left: 87.11%;
+  bottom: 83.33%;
+  font-size: 3.216cqw;
+}
+
+.t-price {
+  left: 87.11%;
+  bottom: 12.14%;
+  font-size: 2.843cqw;
+}
+
+/* Footer */
+
+footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 15px;
+  color: var(--muted);
+}
+
+footer strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.colophon {
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .home {
+    padding-top: 36px;
+  }
+}

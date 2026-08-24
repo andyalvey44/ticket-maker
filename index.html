@@ -5,9 +5,103 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ticket Maker</title>
+    <meta
+      name="description"
+      content="An internal tool that makes show tickets for the Mark Ridley's Comedy Castle box office."
+    />
+    <link rel="stylesheet" href="/home.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <main class="home">
+      <header class="masthead">
+        <img src="/comedycastlelogo.png" alt="Mark Ridley's Comedy Castle" class="club-logo" />
+        <p class="eyebrow">Internal tool</p>
+        <h1>Ticket Maker</h1>
+        <p class="standfirst">
+          Show tickets for the Comedy Castle box office, made in about two
+          minutes a week instead of an afternoon.
+        </p>
+        <a class="enter" href="/app">Open Ticket Maker</a>
+        <p class="staff-note">For Comedy Castle office staff</p>
+      </header>
+
+      <section class="notice-band">
+        <p>
+          <strong>This is a private tool for one comedy club's office.</strong>
+          There is no sign-up and no public version. It is used by staff on the
+          club's own computers, and it is here on the web only so it can be kept
+          up to date without visiting the office.
+        </p>
+      </section>
+
+      <section>
+        <h2>What it replaces</h2>
+        <p>
+          Every show at the Comedy Castle needs printed tickets. Until now
+          someone opened a design file, typed in the comedian, the day, the
+          date, the time and the price, exported it, and repeated that for every
+          performance — six or more in a busy week, and again whenever a show
+          moved.
+        </p>
+        <p>
+          Ticket Maker does the typing. A person still checks every show before
+          anything is printed.
+        </p>
+      </section>
+
+      <section>
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li>
+            <span class="step-name">Get the shows</span>
+            It reads the club's published schedule and lists what is coming up —
+            this week, or the next four weeks.
+          </li>
+          <li>
+            <span class="step-name">Check the list</span>
+            Every show can be corrected or removed. Comedy schedules change
+            constantly, so nothing is ever treated as final.
+          </li>
+          <li>
+            <span class="step-name">Create the tickets</span>
+            Each show becomes its own print-ready ticket, matching the ones the
+            club already prints, in one folder ready for the box office.
+          </li>
+        </ol>
+      </section>
+
+      <section class="ticket-section">
+        <h2>The ticket it makes</h2>
+        <p>
+          Drawn from the club's real ticket stock — 5⅜ inches wide, orange bands
+          top to bottom, the show details centred in the white.
+        </p>
+        <div
+          class="ticket"
+          role="img"
+          aria-label="A Comedy Castle ticket: an orange band, the club logo with the headliner, date and show time below it, then a second orange band carrying the age at the top and the price at the bottom."
+        >
+          <div class="band band-left"></div>
+          <div class="face"></div>
+          <div class="band band-right"></div>
+          <div class="strip"></div>
+
+          <img class="t-logo" src="/ticket-logo.png" alt="" />
+          <span class="t-name">MATT CONN</span>
+          <span class="t-date">THURSDAY, AUGUST 27, 2026</span>
+          <span class="t-time">7:30PM</span>
+          <span class="t-age">+18</span>
+          <span class="t-price">$26-$31</span>
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          Built for <strong>Mark Ridley's Comedy Castle</strong>, Royal Oak,
+          Michigan.
+        </p>
+        <p class="colophon">Built by Andrew A</p>
+      </footer>
+    </main>
   </body>
 </html>
