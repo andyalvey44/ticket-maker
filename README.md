@@ -150,6 +150,11 @@ headliner; none of them touch the orange.
 - Font: **Ultra Regular**, taken out of the reference PDF itself, so it is the
   same bytes the office's tickets already use. `scripts/extract-reference-assets.cjs`
   regenerates the logo from the same source.
+  The extracted file had its tables packed with no padding, as PDF embedders do;
+  browsers reject that, so `scripts/repack-ticket-font.cjs` realigned them to
+  4-byte boundaries. Glyph, metric and cmap bytes are untouched — it is still the
+  same typeface, and generated PDFs are byte-identical. Run it again if the font
+  is ever re-extracted.
 - Size: 30.02 for the main block.
 - Main block is pure black. Price and age are `#02191C`.
 

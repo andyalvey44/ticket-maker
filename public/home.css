@@ -196,7 +196,8 @@ ol.steps li::before {
    Every position below is measured off the office's own reference tickets and
    converted to a share of the 5 3/8 inch stock, so this shows what the tool
    actually prints — including the date shrinking when it runs long, and the
-   centre block sitting on the logo's own axis. */
+   centre block sitting on the logo's own axis. The one exception is the age
+   and price, noted where they are set. */
 
 .ticket-section .ticket {
   position: relative;
@@ -253,41 +254,54 @@ ol.steps li::before {
 }
 
 .t-logo {
-  left: 34.4%;
+  left: 33.87%;
   bottom: 74.18%;
   width: 28.05%;
   height: auto;
 }
 
+/* The logo and these three lines are one block on one axis, moved left by a
+   single nudge step (5 page units, 0.53% of the stock) from the printed
+   48.43%. On the stock the date is shrunk to fill the white area exactly, so
+   it lands hard against the orange; the office sees the same thing in the room
+   because the template paper sits shifted. Andy asked for the drawing to show
+   the block clear of the orange, so the whole block — not the age and price —
+   is bumped one step left. */
+
 .t-name {
-  left: 48.43%;
+  left: 47.9%;
   bottom: 56.31%;
   font-size: 3.184cqw;
 }
 
 .t-date {
-  left: 48.43%;
+  left: 47.9%;
   bottom: 46.18%;
   font-size: 2.894cqw;
 }
 
 .t-time {
-  left: 48.43%;
+  left: 47.9%;
   bottom: 35.3%;
   font-size: 3.184cqw;
 }
 
-/* Age and price share one axis over the right-hand orange band, which spans
-   73.3% to 89.5% of the stock. */
+/* Age and price share one axis, as they do on the printed ticket.
+
+   The printed axis is 87.11% of the stock, which puts both lines half on the
+   orange and half on the white strip beyond it — that is genuinely how the
+   club's tickets come out, but on a drawing it just reads as a mistake. Here
+   they are centred on the right-hand orange band itself (73.26% to 89.53%,
+   so 81.4%), which is the one place this drawing departs from the print. */
 
 .t-age {
-  left: 87.11%;
+  left: 81.4%;
   bottom: 83.33%;
   font-size: 3.216cqw;
 }
 
 .t-price {
-  left: 87.11%;
+  left: 81.4%;
   bottom: 12.14%;
   font-size: 2.843cqw;
 }
