@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { parseEvents } from './parseEvents'
+import { parseEvents } from './parseEvents.js'
 
 const EVENTS_URL = 'https://www.comedycastle.com/events/'
 

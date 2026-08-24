@@ -17,9 +17,23 @@ function toAge(age: string): AgeRestriction {
 /** Every upcoming performance the Comedy Castle website is listing right now. */
 export async function fetchShows(): Promise<Show[]> {
   const response = await fetch('/api/shows')
-  if (!response.ok) throw new Error(`Shows request failed: ${response.status}`)
+  const text = await response.text()
 
-  const body = (await response.json()) as { shows?: SiteShow[] }
+  // The screen only ever says "could not get the shows"; the detail goes to the
+  // console so the cause is visible when this is looked at from outside the office.
+  if (!response.ok) {
+    console.error(`/api/shows returned ${response.status}`, text.slice(0, 400))
+    throw new Error(`Shows request failed: ${response.status}`)
+  }
+
+  let body: { shows?: SiteShow[] }
+  try {
+    body = JSON.parse(text) as { shows?: SiteShow[] }
+  } catch {
+    // HTML here means the server never ran the shows endpoint at all.
+    console.error('/api/shows did not return JSON:', text.slice(0, 400))
+    throw new Error('Shows request did not return show data')
+  }
   if (!body.shows) throw new Error('Shows request returned nothing usable')
 
   return sortShows(
