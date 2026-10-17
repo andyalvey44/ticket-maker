@@ -92,9 +92,11 @@ export default function App() {
 
   function createTickets() {
     if (missingPrice.length > 0) {
+      const names = missingPrice.map((show) => show.headliner).join(', ')
       setProblem(
-        `Add a price to ${missingPrice.length === 1 ? 'this show' : 'these shows'} first: ` +
-          missingPrice.map((show) => show.headliner).join(', '),
+        missingPrice.length === 1
+          ? `${names} needs a price. Click Change on that show, type the price and click Save, then click Create Tickets again.`
+          : `These shows need a price: ${names}. On each one, click Change, type the price and click Save. Then click Create Tickets again.`,
       )
       return
     }
@@ -107,7 +109,9 @@ export default function App() {
 
   const createOne = (show: Show) => {
     if (!show.price.trim()) {
-      setProblem(`Add a price to ${show.headliner} first.`)
+      setProblem(
+        `${show.headliner} needs a price. Click Change on that show, type the price and click Save, then click Just this ticket again.`,
+      )
       return
     }
     run(
