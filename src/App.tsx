@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import NoPriceDialog from './NoPriceDialog'
 import ShowRow from './ShowRow'
 import { fetchShows } from './fetchShows'
 import { nextFourWeeks, sortShows, thisWeek, type Show } from './shows'
@@ -23,6 +24,9 @@ export default function App() {
   const [problem, setProblem] = useState('')
   const [nudge, setNudge] = useState<Nudge>(loadNudge)
   const [showNudge, setShowNudge] = useState(false)
+  const [askNoPrice, setAskNoPrice] = useState<{ shows: Show[]; make: () => void } | null>(
+    null,
+  )
 
   const working = loading || busy
   const missingPrice = (shows ?? []).filter((show) => !show.price.trim())
@@ -90,29 +94,40 @@ export default function App() {
     }
   }
 
-  function createTickets() {
-    if (missingPrice.length > 0) {
-      setProblem(
-        `Add a price to ${missingPrice.length === 1 ? 'this show' : 'these shows'} first: ` +
-          missingPrice.map((show) => show.headliner).join(', '),
-      )
-      return
+  /** Make the tickets now, or ask first when some of them have no price. */
+  function makeOrAsk(unpriced: Show[], make: () => void) {
+    if (unpriced.length > 0) {
+      setAskNoPrice({ shows: unpriced, make })
+    } else {
+      make()
     }
-    run(
-      () => createTicketsFolder(shows ?? [], range, nudge),
-      (folder) =>
-        `Your tickets are ready. Look in this computer's Downloads for ${folder}. Right-click it, choose Extract All, then copy the folder to the ticket window computer.`,
+  }
+
+  /** Back from the no-price question: bring the first unpriced show into view. */
+  function showWhereToAddPrice(show: Show) {
+    const change = document.querySelector<HTMLButtonElement>(
+      `[data-show-id="${show.id}"] button.change`,
+    )
+    change?.scrollIntoView({ block: 'center' })
+    change?.focus({ preventScroll: true })
+  }
+
+  function createTickets() {
+    makeOrAsk(missingPrice, () =>
+      run(
+        () => createTicketsFolder(shows ?? [], range, nudge),
+        (folder) =>
+          `Your tickets are ready. Look in this computer's Downloads for ${folder}. Right-click it, choose Extract All, then copy the folder to the ticket window computer.`,
+      ),
     )
   }
 
   const createOne = (show: Show) => {
-    if (!show.price.trim()) {
-      setProblem(`Add a price to ${show.headliner} first.`)
-      return
-    }
-    run(
-      () => createOneTicket(show, nudge),
-      (name) => `One ticket is ready: ${name}. It is in this computer's Downloads.`,
+    makeOrAsk(show.price.trim() ? [] : [show], () =>
+      run(
+        () => createOneTicket(show, nudge),
+        (name) => `One ticket is ready: ${name}. It is in this computer's Downloads.`,
+      ),
     )
   }
 
@@ -178,6 +193,20 @@ export default function App() {
 
       {notice && <p className="notice done">{notice}</p>}
       {problem && <p className="notice problem">{problem}</p>}
+
+      {askNoPrice && (
+        <NoPriceDialog
+          shows={askNoPrice.shows}
+          onBack={() => {
+            setAskNoPrice(null)
+            showWhereToAddPrice(askNoPrice.shows[0])
+          }}
+          onContinue={() => {
+            setAskNoPrice(null)
+            askNoPrice.make()
+          }}
+        />
+      )}
 
       {shows !== null && (
         <div className="fit">

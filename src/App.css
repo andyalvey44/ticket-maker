@@ -233,6 +233,42 @@ button.create:hover:not(:disabled) {
   background: #fdf3f4;
 }
 
+/* Asked before making tickets that have no price */
+
+dialog.no-price {
+  width: 560px;
+  max-width: calc(100% - 32px);
+  padding: 28px;
+  color: var(--text);
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+}
+
+dialog.no-price::backdrop {
+  background: rgb(28 26 34 / 0.45);
+}
+
+dialog.no-price h2 {
+  font-size: 24px;
+}
+
+dialog.no-price p,
+dialog.no-price ul {
+  margin: 12px 0 0;
+}
+
+dialog.no-price ul {
+  padding-left: 22px;
+}
+
+.dialog-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 /* Lining the printing up on the ticket stock */
 
 .fit {

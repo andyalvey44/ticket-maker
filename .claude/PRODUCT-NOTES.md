@@ -44,7 +44,10 @@ visible.
 
 <!-- Newest at the top. -->
 
-_(nothing yet — first note goes here)_
+- **10-23** (said in chat) — A show with no price must not stop the printing.
+  Keep the red "Needs a price", and when they click to make the tickets, pop
+  up a message saying some tickets have no price because the website listed
+  none. Offer to go back and add the missing prices, or continue anyway.
 
 ---
 
@@ -55,6 +58,11 @@ Newest at the top. Everything below was decided during the initial build
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 10-23 | A missing price no longer blocks. Create Tickets asks first, naming each unpriced show by date and time, then either goes back or makes the tickets with the price left blank | Andy's 10-23 note. **Overturns the 08-24 "blocks Create Tickets" row.** Shows are listed with their date because a run of nights repeats the same name |
+| 10-23 | Just this ticket asks the same question | Andy said printing should not be stopped; the single-ticket button had the same block, so it gets the same treatment |
+| 10-23 | "Go back" is the highlighted, pre-selected choice, and Esc counts as going back | An accidental Enter or Esc should cost nothing. Continuing is one deliberate click |
+| 10-23 | Going back scrolls to the first unpriced show and puts the cursor on its Change button | The list can run to 20+ shows over four weeks, and the button that starts the fix is the one they need |
+| 10-23 | The question is an in-page box, not the browser's own pop-up | The browser's version can only say OK and Cancel; non-technical users need the buttons to say what they do |
 | 08-24 | Home page drawing bumps the whole centre block (logo and all three lines) one nudge step left, to 47.9% | Andy: the centre info should sit in the white completely. On the stock the date is shrunk to fill the white area exactly, so it lands hard against the orange — and the office sees the same in the room because the template paper sits shifted. The logo moves with the lines so the two keep sharing one axis. Measured clearance in the drawing is 0.02"; the age and price did not move, and the printed axis is unchanged |
 | 08-24 | Ticket font repacked so its tables start on 4-byte boundaries (`scripts/repack-ticket-font.cjs`) | The font was lifted out of the reference PDF, and PDF embedders pack tables with no padding. Chrome's sanitiser rejected the whole file — "OTS parsing error: cvt : misaligned table" — so the home page had been silently falling back to a plain serif and looked nothing like a ticket. Only table positions and checksums changed; every table's bytes are identical and three sample tickets generate byte-identical PDFs |
 | 08-24 | Home page drawing centres age and price on the orange band (81.4%), not on the printed axis (87.11%) | Andy: the right-most info looked misaligned. On the real stock both lines genuinely sit half on the orange and half on the white strip past it — confirmed against the ticket photo — but on a drawing that just reads as a mistake. **The one place the drawing departs from the print.** The printed axis is unchanged |
@@ -82,7 +90,7 @@ Newest at the top. Everything below was decided during the initial build
 | 08-24 | Price and age centred on axes solved from the reference, not on the bands | Both reference PDFs agree exactly; reproduces current output |
 | 08-24 | Multi-night runs split into one ticket per performance | The website lists a weekend as one entry; each performance needs its own ticket |
 | 08-24 | `CLOSED:` events filtered out | Holidays sit in the website's list like any other event |
-| 08-24 | A show with no price blocks Create Tickets | A priceless ticket is a wasted print run. 4 such shows listed right now |
+| ~~08-24~~ | ~~A show with no price blocks Create Tickets~~ | ~~A priceless ticket is a wasted print run. 4 such shows listed right now~~ — overturned 10-23 by Andy's note: it now asks instead |
 | 08-24 | Output is one PDF per show, zipped, zip named like the folder | The window prints a stack per show; extracting gives exactly the folder to copy |
 | 08-24 | Ticket files numbered `01 -`, `02 -` … | Keeps the folder in show order in Windows Explorer |
 | 08-24 | Scraping the events page, not an API | No feed exists — checked the calendar plugin API, the WordPress events endpoint, iCal export, and all 23 published namespaces |
@@ -107,7 +115,7 @@ they look.
 | B | Does a test print actually land correctly on the stock? | Untested — measured off the ticket photo, never printed |
 | C | Should an all-ages show print something instead of nothing? | Prints nothing |
 | D | Are matinees or afternoon shows ever a thing? | Time list runs 4:00 PM to 11:45 PM only |
-| E | When the website has no price, is there a house rule, or does someone always know it? | Blocks ticket creation until typed in |
+| E | When the website has no price, is there a house rule, or does someone always know it? | Asks before making them; they can add a price or print it blank (since 10-23) |
 | F | How many of each ticket does the window print? Does that ever need to be on screen? | Not tracked at all |
 | G | Does anyone besides the one employee ever run this? | Assumes one person, one computer |
 

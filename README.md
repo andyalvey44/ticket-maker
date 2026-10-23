@@ -60,8 +60,9 @@ screens, so repeats are dropped. Days the club is closed are listed as events
 titled `CLOSED: …` and are excluded.
 
 Age restrictions come from the site when it states them and default to 18+.
-A few shows are listed with no price; those are flagged in the review list and
-block ticket creation until someone fills them in.
+A few shows are listed with no price. Those are flagged in the review list, and
+making their tickets first asks whether to go back and add a price or carry on
+with the price left blank.
 
 ## Ticket specification
 

@@ -40,7 +40,7 @@ export default function ShowRow({
 
   if (!editing) {
     return (
-      <li className="show">
+      <li className="show" data-show-id={show.id}>
         <div className="show-details">
           <p className="show-headliner">{show.headliner}</p>
           <p className="show-when">
@@ -58,7 +58,7 @@ export default function ShowRow({
         <div className="show-actions">
           <button
             type="button"
-            className="small"
+            className="small change"
             disabled={busy}
             onClick={startEditing}
           >
