@@ -115,7 +115,7 @@ export default function App() {
   function createTickets() {
     makeOrAsk(missingPrice, () =>
       run(
-        () => createTicketsFolder(shows ?? [], range, nudge),
+        () => createTicketsFolder(shows ?? [], nudge),
         (folder) =>
           `Your tickets are ready. Look in this computer's Downloads for ${folder}. Right-click it, choose Extract All, then copy the folder to the ticket window computer.`,
       ),

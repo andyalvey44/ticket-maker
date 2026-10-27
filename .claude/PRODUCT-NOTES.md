@@ -44,6 +44,8 @@ visible.
 
 <!-- Newest at the top. -->
 
+- **10-27** (chosen in chat) — Folder named by the date range, e.g. "Tickets
+  Oct 23 - Oct 25". Each ticket file named "MM.D Time Comedian (or show name)".
 - **10-23** (said in chat) — A show with no price must not stop the printing.
   Keep the red "Needs a price", and when they click to make the tickets, pop
   up a message saying some tickets have no price because the website listed
@@ -58,6 +60,11 @@ Newest at the top. Everything below was decided during the initial build
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 10-27 | Ticket files are named `10.23 7.30PM Matt Conn.pdf`, with no `01 -` number | Andy's 10-27 note. **Overturns the 08-24 "numbered" row.** Windows Explorer sorts the numbers by value, so the date and time still keep the folder in show order, except across New Year, when January sorts before December |
+| 10-27 | `MM.D` read literally: month always two digits, day as it comes (`11.2`, `01.15`) | That is what the pattern says in date-format terms. Unverified that Andy meant it that way rather than `MM.DD` |
+| 10-27 | The time is written `7.30PM` | Windows will not take a colon; a dot matches the dot Andy chose for the date, and `7-30` read like a range |
+| 10-27 | The folder runs from the first show's date to the last show's, not across the dates asked for, and a one-day folder shows one date | It says what is actually inside. A quiet Monday on "this week" would otherwise name days with no tickets |
+| 10-27 | Two shows that would get the same file name get ` (2)` added to the second | The `01 -` number used to keep names unique; without it, extracting would ask to overwrite one ticket with the other |
 | 10-23 | A missing price no longer blocks. Create Tickets asks first, naming each unpriced show by date and time, then either goes back or makes the tickets with the price left blank | Andy's 10-23 note. **Overturns the 08-24 "blocks Create Tickets" row.** Shows are listed with their date because a run of nights repeats the same name |
 | 10-23 | Just this ticket asks the same question | Andy said printing should not be stopped; the single-ticket button had the same block, so it gets the same treatment |
 | 10-23 | "Go back" is the highlighted, pre-selected choice, and Esc counts as going back | An accidental Enter or Esc should cost nothing. Continuing is one deliberate click |
@@ -92,7 +99,7 @@ Newest at the top. Everything below was decided during the initial build
 | 08-24 | `CLOSED:` events filtered out | Holidays sit in the website's list like any other event |
 | ~~08-24~~ | ~~A show with no price blocks Create Tickets~~ | ~~A priceless ticket is a wasted print run. 4 such shows listed right now~~ — overturned 10-23 by Andy's note: it now asks instead |
 | 08-24 | Output is one PDF per show, zipped, zip named like the folder | The window prints a stack per show; extracting gives exactly the folder to copy |
-| 08-24 | Ticket files numbered `01 -`, `02 -` … | Keeps the folder in show order in Windows Explorer |
+| ~~08-24~~ | ~~Ticket files numbered `01 -`, `02 -` …~~ | ~~Keeps the folder in show order in Windows Explorer~~ — overturned 10-27 by Andy's note: files now start with the date |
 | 08-24 | Scraping the events page, not an API | No feed exists — checked the calendar plugin API, the WordPress events endpoint, iCal export, and all 23 published namespaces |
 | 08-24 | Deterministic parsing, no AI anywhere in the running app | Andy's instruction: exact data, never inferred. A wrong name on a printed ticket is worse than a loud failure |
 | 08-24 | Print alignment nudge saved in the browser, per computer | Lets the office correct a drifting printer with no code change |

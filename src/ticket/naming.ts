@@ -1,14 +1,13 @@
 import type { Show } from '../shows'
 
-const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const SHORT_MONTHS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ]
 
 function parts(date: string) {
-  const [year, month, day] = date.split('-').map(Number)
-  return { d: new Date(year, month - 1, day), day }
+  const [, month, day] = date.split('-').map(Number)
+  return { month, day }
 }
 
 /** Windows rejects \ / : * ? " < > | in file names. */
@@ -16,18 +15,30 @@ function safe(text: string): string {
   return text.replace(/[:*?"<>|/\\]/g, '-').replace(/\s+/g, ' ').trim()
 }
 
-/** "01 - Sat Aug 29, 9-30 PM - Marcus Webb.pdf" — numbered so the folder stays in show order. */
-export function ticketFileName(show: Show, index: number): string {
-  const { d, day } = parts(show.date)
-  const when = `${SHORT_DAYS[d.getDay()]} ${SHORT_MONTHS[d.getMonth()]} ${day}`
-  const number = String(index + 1).padStart(2, '0')
-  return safe(`${number} - ${when}, ${show.time} - ${show.headliner}`) + '.pdf'
+/** "7:30 PM" -> "7.30PM", since Windows will not take the colon. */
+function fileTime(time: string): string {
+  return time.replace(':', '.').replace(/\s+/g, '').toUpperCase()
 }
 
-/** "Tickets - Week of Aug 24" / "Tickets - Next 4 Weeks" */
-export function folderName(shows: Show[], range: 'week' | 'fourWeeks'): string {
+/**
+ * "10.23 7.30PM Matt Conn.pdf" — month, day, time, then the comedian or show.
+ * Windows Explorer sorts the numbers by value, so the folder stays in show order.
+ */
+export function ticketFileName(show: Show): string {
+  const { month, day } = parts(show.date)
+  const when = `${String(month).padStart(2, '0')}.${day}`
+  return safe(`${when} ${fileTime(show.time)} ${show.headliner}`) + '.pdf'
+}
+
+/** "Tickets Oct 23 - Oct 25": the first and last show dates in the folder. */
+export function folderName(shows: Show[]): string {
   if (shows.length === 0) return 'Tickets'
-  if (range === 'fourWeeks') return 'Tickets - Next 4 Weeks'
-  const { d, day } = parts(shows[0].date)
-  return `Tickets - Week of ${SHORT_MONTHS[d.getMonth()]} ${day}`
+  const dates = shows.map((show) => show.date).sort()
+  const short = (date: string) => {
+    const { month, day } = parts(date)
+    return `${SHORT_MONTHS[month - 1]} ${day}`
+  }
+  const first = short(dates[0])
+  const last = short(dates[dates.length - 1])
+  return first === last ? `Tickets ${first}` : `Tickets ${first} - ${last}`
 }

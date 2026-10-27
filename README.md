@@ -33,8 +33,9 @@ serves the built front end, so the Get buttons will not work there.
    is the only reason a server piece exists at all.
 2. The shows appear in a review list. Each one can be changed or removed.
 3. **Create Tickets** builds one PDF per show and downloads them as a single
-   zip named after the folder, e.g. `Tickets - Week of Aug 26.zip`. The
-   employee extracts it and copies the folder to the ticket window computer.
+   zip named after the dates inside, e.g. `Tickets Oct 23 - Oct 25.zip`. Each
+   ticket is named month, day, time, then who, e.g. `10.23 7.30PM Matt Conn.pdf`.
+   The employee extracts it and copies the folder to the ticket window computer.
 4. **Just this ticket** on any row re-makes that one show's ticket, for when a
    single show changes after the batch was made.
 
