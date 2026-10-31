@@ -44,6 +44,9 @@ visible.
 
 <!-- Newest at the top. -->
 
+- **10-31** (said in chat) — Ticket PDFs named `DD.30.26 0:00 Name Of Show`:
+  the date as month.day.year, then the time as `730` or `1015`, no leading
+  zero on a single-digit hour, then the show.
 - **10-27** (chosen in chat) — Folder named by the date range, e.g. "Tickets
   Oct 23 - Oct 25". Each ticket file named "MM.D Time Comedian (or show name)".
 - **10-23** (said in chat) — A show with no price must not stop the printing.
@@ -60,9 +63,11 @@ Newest at the top. Everything below was decided during the initial build
 
 | Date | Decision | Why |
 | --- | --- | --- |
-| 10-27 | Ticket files are named `10.23 7.30PM Matt Conn.pdf`, with no `01 -` number | Andy's 10-27 note. **Overturns the 08-24 "numbered" row.** Windows Explorer sorts the numbers by value, so the date and time still keep the folder in show order, except across New Year, when January sorts before December |
-| 10-27 | `MM.D` read literally: month always two digits, day as it comes (`11.2`, `01.15`) | That is what the pattern says in date-format terms. Unverified that Andy meant it that way rather than `MM.DD` |
-| 10-27 | The time is written `7.30PM` | Windows will not take a colon; a dot matches the dot Andy chose for the date, and `7-30` read like a range |
+| 10-31 | Ticket files are named `10.30.26 730 Matt Conn.pdf`: month, day, two-digit year, time with no colon and no PM, then the act | Andy's 10-31 note. **Overturns the 10-27 date and time rows.** Every show is in the evening, so leaving out PM loses nothing, and Explorer still sorts `730` before `1015` |
+| 10-31 | The day is always two digits (`11.06.26`), like the month | Andy wrote the pattern as a full date (`DD.30.26`, read as month.day.year; Andy said go after that reading was put to them). Padding the day also stops anything that sorts names alphabetically putting Nov 10 before Nov 6 |
+| ~~10-27~~ | ~~Ticket files are named `10.23 7.30PM Matt Conn.pdf`, with no `01 -` number~~ | ~~Andy's 10-27 note. **Overturns the 08-24 "numbered" row.** Windows Explorer sorts the numbers by value, so the date and time still keep the folder in show order, except across New Year, when January sorts before December~~ — date and time format overturned 10-31 by Andy's note; still unnumbered |
+| ~~10-27~~ | ~~`MM.D` read literally: month always two digits, day as it comes (`11.2`, `01.15`)~~ | ~~That is what the pattern says in date-format terms. Unverified that Andy meant it that way rather than `MM.DD`~~ — overturned 10-31 |
+| ~~10-27~~ | ~~The time is written `7.30PM`~~ | ~~Windows will not take a colon; a dot matches the dot Andy chose for the date, and `7-30` read like a range~~ — overturned 10-31 by Andy's note |
 | 10-27 | The folder runs from the first show's date to the last show's, not across the dates asked for, and a one-day folder shows one date | It says what is actually inside. A quiet Monday on "this week" would otherwise name days with no tickets |
 | 10-27 | Two shows that would get the same file name get ` (2)` added to the second | The `01 -` number used to keep names unique; without it, extracting would ask to overwrite one ticket with the other |
 | 10-23 | A missing price no longer blocks. Create Tickets asks first, naming each unpriced show by date and time, then either goes back or makes the tickets with the price left blank | Andy's 10-23 note. **Overturns the 08-24 "blocks Create Tickets" row.** Shows are listed with their date because a run of nights repeats the same name |

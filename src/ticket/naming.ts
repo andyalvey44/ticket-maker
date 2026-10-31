@@ -15,18 +15,22 @@ function safe(text: string): string {
   return text.replace(/[:*?"<>|/\\]/g, '-').replace(/\s+/g, ' ').trim()
 }
 
-/** "7:30 PM" -> "7.30PM", since Windows will not take the colon. */
+const twoDigits = (n: number) => String(n).padStart(2, '0')
+
+/** "7:30 PM" -> "730", "10:15 PM" -> "1015". Every show is in the evening, so no PM. */
 function fileTime(time: string): string {
-  return time.replace(':', '.').replace(/\s+/g, '').toUpperCase()
+  const match = /^(\d{1,2}):(\d{2})/.exec(time.trim())
+  return match ? `${Number(match[1])}${match[2]}` : time
 }
 
 /**
- * "10.23 7.30PM Matt Conn.pdf" — month, day, time, then the comedian or show.
- * Windows Explorer sorts the numbers by value, so the folder stays in show order.
+ * "10.30.26 730 Matt Conn.pdf" — month, day, year, time, then the comedian or
+ * show. Windows Explorer sorts the numbers by value, so the folder stays in
+ * show order.
  */
 export function ticketFileName(show: Show): string {
-  const { month, day } = parts(show.date)
-  const when = `${String(month).padStart(2, '0')}.${day}`
+  const [year, month, day] = show.date.split('-').map(Number)
+  const when = `${twoDigits(month)}.${twoDigits(day)}.${twoDigits(year % 100)}`
   return safe(`${when} ${fileTime(show.time)} ${show.headliner}`) + '.pdf'
 }
 
